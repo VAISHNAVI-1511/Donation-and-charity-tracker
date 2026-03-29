@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start a Campaign | HopeFund</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div style="display: flex; align-items: center; gap: 2rem;">
+                <a href="index.html" class="logo">HopeFund</a>
+                <div class="dropdown">
+                    <button class="dropbtn" style="background: none; border: none; color: var(--text); font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-family: inherit;">
+                        Browse <span style="font-size: 0.7rem;">▼</span>
+                    </button>
+                    <div class="dropdown-content glass" id="browse-dropdown-content">
+                        <!-- Categories will be added here via JS -->
+                    </div>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Explore</a></li>
+                <li id="auth-links"><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+
+        <div class="form-container glass fade-in" style="max-width: 600px;">
+            <h2 style="margin-bottom: 2rem; text-align: center;">Start Your Fundraising Campaign</h2>
+            <form id="campaign-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Campaign Title</label>
+                    <input type="text" id="title" placeholder="e.g. Help My Friend's Surgery" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="category" required>
+                        <option value="Medical">Medical</option>
+                        <option value="Education">Education</option>
+                        <option value="Disaster Relief">Disaster Relief</option>
+                        <option value="Animal Rescue">Animal Rescue</option>
+                        <option value="Community Support">Community Support</option>
+                        <option value="Environment">Environment</option>
+                        <option value="Child Welfare">Child Welfare</option>
+                        <option value="Elderly Care">Elderly Care</option>
+                        <option value="Women Empowerment">Women Empowerment</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Arts & Culture">Arts & Culture</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Emergency Help">Emergency Help</option>
+                        <option value="Food & Hunger">Food & Hunger</option>
+                        <option value="Shelter & Housing">Shelter & Housing</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Target Amount (₹)</label>
+                    <input type="number" id="goalAmount" placeholder="50000" required>
+                </div>
+                <div class="form-group">
+                    <label>Campaign Image</label>
+                    <div id="image-drop-zone" style="border: 2px dashed var(--glass-border); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s; background: rgba(0,0,0,0.02); position: relative;">
+                        <div id="drop-zone-content">
+                            <div style="font-size: 2.5rem; margin-bottom: 1rem;">🖼️</div>
+                            <div style="font-weight: 600; color: var(--text);">Click to upload or Paste image (Ctrl+V)</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Supports: JPG, PNG, WEBP</div>
+                        </div>
+                        <div id="image-preview-container" style="display: none; width: 100%; height: 100%; border-radius: 8px; overflow: hidden;">
+                            <img id="image-preview" src="" alt="Preview" style="width: 100%; max-height: 250px; object-fit: contain;">
+                            <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--primary); font-weight: 600;">Click or Paste to change image</div>
+                        </div>
+                        <input type="file" id="image" accept="image/*" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" rows="5" placeholder="Tell your story..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Launch Campaign</button>
+            </form>
+        </div>
+    </div>
+    <script src="js/main.js"></script>
+    <script>
+        if (!auth.isLoggedIn()) {
+            window.location.href = 'login.html';
+        }
+
+        let pastedFile = null;
+        const dropZone = document.getElementById('image-drop-zone');
+        const dropContent = document.getElementById('drop-zone-content');
+        const previewContainer = document.getElementById('image-preview-container');
+        const previewImg = document.getElementById('image-preview');
+
+        // Handle Paste (Global but focused)
+        document.addEventListener('paste', (e) => {
+            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT' && e.target.type !== 'file') return;
+            
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let item of items) {
+                if (item.type.indexOf('image') !== -1) {
+                    const blob = item.getAsFile();
+                    pastedFile = blob;
+                    showPreview(blob);
+                }
+            }
+        });
+
+        // Handle File Input Change
+        document.getElementById('image').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                pastedFile = null;
+                showPreview(file);
+            }
+        });
+
+        // Drag and Drop Visuals
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'var(--primary)';
+            dropZone.style.background = 'rgba(59, 130, 246, 0.05)';
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = 'var(--glass-border)';
+            dropZone.style.background = 'rgba(0,0,0,0.02)';
+        });
+
+        function showPreview(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                dropContent.style.display = 'none';
+                previewContainer.style.display = 'block';
+                dropZone.style.borderColor = 'var(--primary)';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        document.getElementById('campaign-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('title', document.getElementById('title').value);
+            formData.append('category', document.getElementById('category').value);
+            formData.append('goalAmount', document.getElementById('goalAmount').value);
+            formData.append('description', document.getElementById('description').value);
+            
+            const imageInput = document.getElementById('image');
+            const imageFile = imageInput.files[0] || pastedFile;
+            
+            if (imageFile) {
+                // If it's a pasted file (blob), we might want to give it a name
+                if (imageFile === pastedFile) {
+                    formData.append('image', imageFile, 'pasted-image.png');
+                } else {
+                    formData.append('image', imageFile);
+                }
+            }
+
+            try {
+                const res = await fetch('/api/campaigns', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${auth.getToken()}`
+                    },
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    window.location.href = 'index.html';
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) {
+                alert('Failed to create campaign');
+            }
+        });
+    </script>
+</body>
+</html>

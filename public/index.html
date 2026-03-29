@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HopeFund | Home</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div style="display: flex; align-items: center; gap: 2rem;">
+                <a href="index.html" class="logo">HopeFund</a>
+                <div class="dropdown">
+                    <button class="dropbtn" style="background: none; border: none; color: var(--text); font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-family: inherit;">
+                        Browse <span style="font-size: 0.7rem;">▼</span>
+                    </button>
+                    <div class="dropdown-content glass" id="browse-dropdown-content">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="campaigns.html">Explore</a></li>
+                <li><a href="create-campaign.html" id="create-btn">Start Campaign</a></li>
+                <li id="auth-links">
+                    <a href="login.html">Login</a>
+                </li>
+            </ul>
+        </nav>
+
+        <section class="hero fade-in">
+            <h1>Making a Difference, <br>One Donation at a Time.</h1>
+            <p>Every contribution helps someone in need. Start a campaign or explore active causes to support today.</p>
+            <div class="search-filter glass" style="padding: 1rem; display: flex; gap: 1rem; max-width: 500px; margin: 0 auto;">
+                <input type="text" id="search-input" placeholder="Search causes by title or keyword..." style="flex: 1; background: transparent; border: none; color: var(--text); outline: none;">
+                <button class="btn btn-primary" id="search-btn">Search</button>
+            </div>
+        </section>
+
+        <section class="leaderboard fade-in" style="margin-top: -3rem; margin-bottom: 5rem;">
+            <div class="glass" style="padding: 2.5rem; max-width: 900px; margin: 0 auto;">
+                <h2 style="text-align: center; margin-bottom: 2rem; font-size: 1.5rem;">🏆 Top Donors Leaderboard</h2>
+                <div id="top-donors-list" style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1.5rem;">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <section class="featured fade-in" style="margin-bottom: 5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+                <h2>Featured Fundraisers</h2>
+                <a href="campaigns.html" style="color: var(--primary); font-weight: 600; text-decoration: none;">View All →</a>
+            </div>
+            <div class="campaign-grid" id="campaign-list">
+                <!-- Loaded dynamically (limited) -->
+            </div>
+        </section>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

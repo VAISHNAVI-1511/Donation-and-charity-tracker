@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | HopeFund</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div style="display: flex; align-items: center; gap: 2rem;">
+                <a href="index.html" class="logo">HopeFund</a>
+                <div class="dropdown">
+                    <button class="dropbtn" style="background: none; border: none; color: var(--text); font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-family: inherit;">
+                        Browse <span style="font-size: 0.7rem;">▼</span>
+                    </button>
+                    <div class="dropdown-content glass" id="browse-dropdown-content">
+                        <!-- Categories will be added here via JS -->
+                    </div>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Explore</a></li>
+                <li><a href="create-campaign.html">Start Campaign</a></li>
+                <li id="auth-links"></li>
+            </ul>
+        </nav>
+
+        <header style="margin-top: 3rem;">
+            <h1>User Dashboard</h1>
+            <p style="color: var(--text-muted);">Manage your campaigns and track your impact.</p>
+        </header>
+
+        <div class="stats-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 3rem;">
+            <div class="glass stat-card fade-in">
+                <div style="color: var(--text-muted);">Campaigns Created</div>
+                <div class="stat-val" style="font-size: 2.5rem; color: var(--primary); font-weight: 800;" id="user-campaign-count">0</div>
+            </div>
+            <div class="glass stat-card fade-in" style="animation-delay: 0.1s;">
+                <div style="color: var(--text-muted);">Total Raised</div>
+                <div class="stat-val" style="font-size: 2.5rem; color: var(--success); font-weight: 800;" id="user-total-raised">₹0</div>
+            </div>
+            <div class="glass stat-card fade-in" style="animation-delay: 0.2s;">
+                <div style="color: var(--text-muted);">Total Donors</div>
+                <div class="stat-val" style="font-size: 2.5rem; color: var(--accent); font-weight: 800;" id="user-total-donors">0</div>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 4rem;">Your Campaigns</h3>
+        <div class="glass fade-in" style="margin-top: 1.5rem; overflow-x: auto; padding: 1rem;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="text-align: left; border-bottom: 1px solid var(--glass-border);">
+                        <th style="padding: 1rem;">Title</th>
+                        <th style="padding: 1rem;">Goal</th>
+                        <th style="padding: 1rem;">Raised</th>
+                        <th style="padding: 1rem;">Status</th>
+                        <th style="padding: 1rem;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="user-campaign-list">
+                    <!-- Campaigns will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

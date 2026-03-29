@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaign Details | HopeFund</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .campaign-header {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+        .main-img {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            border-radius: 20px;
+        }
+        .donor-list {
+            margin-top: 3rem;
+            padding: 2rem;
+        }
+        .donor-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div style="display: flex; align-items: center; gap: 2rem;">
+                <a href="index.html" class="logo">HopeFund</a>
+                <div class="dropdown">
+                    <button class="dropbtn" style="background: none; border: none; color: var(--text); font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-family: inherit;">
+                        Browse <span style="font-size: 0.7rem;">▼</span>
+                    </button>
+                    <div class="dropdown-content glass" id="browse-dropdown-content">
+                        <!-- Categories will be added here via JS -->
+                    </div>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Explore</a></li>
+                <li id="auth-links"><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+
+        <div id="campaign-details">
+            <!-- Details will be loaded here -->
+        </div>
+
+        <div id="donations-section" class="glass donor-list fade-in" style="display: none;">
+            <h3>Recent Donations</h3>
+            <div id="donor-items">
+                <!-- Donations will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Donation Modal -->
+    <div id="donate-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; overflow-y: auto; padding: 2rem 0;">
+        <div class="glass form-container" style="margin: auto; width: 95%; max-width: 500px; padding: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="margin: 0;">Support this Cause</h2>
+                <button onclick="closeModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+            
+            <div class="donation-type-toggle">
+                <button class="type-btn active" onclick="setDonationType('once', this)">Donate Once</button>
+                <button class="type-btn" onclick="setDonationType('monthly', this)">Donate Monthly</button>
+            </div>
+
+            <form id="donate-form">
+                <div class="form-group">
+                    <label>Choose an amount</label>
+                    <div class="amount-input-wrapper">
+                        <span class="currency-symbol">₹</span>
+                        <input type="number" id="donateAmount" min="1" value="1000" required oninput="updateSummary()">
+                    </div>
+                </div>
+
+                <div class="preset-amounts">
+                    <button type="button" class="preset-btn" onclick="setAmount(100)">₹100</button>
+                    <button type="button" class="preset-btn" onclick="setAmount(500)">₹500</button>
+                    <button type="button" class="preset-btn" onclick="setAmount(1000)">₹1000</button>
+                    <button type="button" class="preset-btn" onclick="setAmount(5000)">₹5000</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" id="donorName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Message (Optional)</label>
+                    <textarea id="donateMessage" rows="2" placeholder="Write a word of encouragement..."></textarea>
+                </div>
+
+                <label style="display: block; margin-bottom: 0.8rem; font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">Payment Method</label>
+                <div class="payment-methods">
+                    <div class="payment-card selected" onclick="setPaymentMethod('gpay', this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        <span>GPay</span>
+                    </div>
+                    <div class="payment-card" onclick="setPaymentMethod('card', this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                        <span>Credit</span>
+                    </div>
+                    <div class="payment-card" onclick="setPaymentMethod('debit', this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 4H3a2 2 0 00-2 2v12a2 2 0 002 2h18a2 2 0 002-2V6a2 2 0 00-2-2z"/><path d="M1 10h22"/><path d="M7 15h0"/></svg>
+                        <span>Debit</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="isAnonymous">
+                        <span>Don't display my name publicly on the fundraiser</span>
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="wantsUpdates" checked>
+                        <span>Send me updates about this campaign</span>
+                    </label>
+                </div>
+
+                <div class="summary-section">
+                    <div class="summary-row">
+                        <span>Donation amount</span>
+                        <span id="sum-donation">₹1,000</span>
+                    </div>
+                    <div class="summary-row" style="flex-direction: column; gap: 4px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Platform tip (<span id="tip-percent">10</span>%)</span>
+                            <span id="sum-tip">₹100</span>
+                        </div>
+                        <input type="range" id="tip-slider" min="0" max="30" value="10" oninput="updateSummary()">
+                    </div>
+                    <div class="summary-row summary-total">
+                        <span>Total to charge</span>
+                        <span id="sum-total">₹1,100</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem; padding: 1rem; font-size: 1.1rem;">Confirm Donation</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const campaignId = urlParams.get('id');
+
+        if (!campaignId) window.location.href = 'index.html';
+
+        async function loadDetails() {
+            try {
+                const res = await fetch(`/api/campaigns/${campaignId}`);
+                const c = await res.json();
+                
+                document.getElementById('campaign-details').innerHTML = `
+                    <div class="campaign-header fade-in">
+                        <div>
+                            <img src="${c.image || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070&auto=format&fit=crop'}" class="main-img">
+                            <div style="margin-top: 2rem;">
+                                <h3>About</h3>
+                                <p style="margin-top: 1rem; color: var(--text-muted); white-space: pre-wrap;">${c.description}</p>
+                            </div>
+                        </div>
+                        <div class="glass" style="padding: 2rem; align-self: start;">
+                            <div class="card-category">${c.category}</div>
+                            <h1 style="margin-bottom: 1.5rem;">${c.title}</h1>
+                            
+                            <div class="progress-stats">
+                                <span style="font-size: 1.5rem; color: var(--text); font-weight: 700;">₹${c.raisedAmount.toLocaleString()}</span>
+                                <span>raised of ₹${c.goalAmount.toLocaleString()}</span>
+                            </div>
+                            <div class="progress-container" style="height: 12px;">
+                                <div class="progress-bar" style="width: ${Math.min((c.raisedAmount / c.goalAmount) * 100, 100)}%"></div>
+                            </div>
+                            <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2rem;">
+                                ${Math.round((c.raisedAmount / c.goalAmount) * 100)}% funded
+                            </div>
+
+                            <button class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 1rem;" onclick="openModal()">Donate Now</button>
+                            
+                            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--glass-border);">
+                                <div style="display: flex; gap: 1rem; align-items: center;">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; justify-content: center; align-items: center; font-weight: bold;">
+                                        ${c.creator.name[0]}
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted);">Campaign Creator</div>
+                                        <div style="font-weight: 600;">${c.creator.name}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                loadDonations();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadDonations() {
+            try {
+                const res = await fetch(`/api/donations/campaign/${campaignId}`);
+                const donations = await res.json();
+                
+                if (donations.length > 0) {
+                    document.getElementById('donations-section').style.display = 'block';
+                    document.getElementById('donor-items').innerHTML = donations.map(d => `
+                        <div class="donor-item">
+                            <div>
+                                <span style="font-weight: 600;">${d.isAnonymous ? 'Anonymous Donor' : d.donorName}</span>
+                                ${d.message ? `<p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">"${d.message}"</p>` : ''}
+                            </div>
+                            <div style="color: var(--success); font-weight: 700;">+ ₹${d.amount.toLocaleString()}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        let selectedDonationType = 'once';
+        let selectedPaymentMethod = 'gpay';
+
+        function setDonationType(type, btn) {
+            selectedDonationType = type;
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function setAmount(amount) {
+            document.getElementById('donateAmount').value = amount;
+            updateSummary();
+        }
+
+        function setPaymentMethod(method, el) {
+            selectedPaymentMethod = method;
+            document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        function updateSummary() {
+            const amount = Number(document.getElementById('donateAmount').value) || 0;
+            const tipPercent = Number(document.getElementById('tip-slider').value);
+            const tipAmount = Math.round(amount * (tipPercent / 100));
+            const total = amount + tipAmount;
+
+            document.getElementById('sum-donation').innerText = `₹${amount.toLocaleString()}`;
+            document.getElementById('tip-percent').innerText = tipPercent;
+            document.getElementById('sum-tip').innerText = `₹${tipAmount.toLocaleString()}`;
+            document.getElementById('sum-total').innerText = `₹${total.toLocaleString()}`;
+        }
+
+        function openModal() {
+            document.getElementById('donate-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            if (auth.isLoggedIn()) {
+                document.getElementById('donorName').value = auth.getUser().name;
+            }
+            updateSummary();
+        }
+
+        function closeModal() {
+            document.getElementById('donate-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        document.getElementById('donate-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const donorName = document.getElementById('donorName').value;
+            const amount = document.getElementById('donateAmount').value;
+            const message = document.getElementById('donateMessage').value;
+            const isAnonymous = document.getElementById('isAnonymous').checked;
+            const wantsUpdates = document.getElementById('wantsUpdates').checked;
+
+            try {
+                const res = await fetch('/api/donations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        donorName, 
+                        amount, 
+                        campaignId, 
+                        message,
+                        donationType: selectedDonationType,
+                        paymentMethod: selectedPaymentMethod,
+                        isAnonymous,
+                        wantsUpdates
+                    })
+                });
+                if (res.ok) {
+                    closeModal();
+                    loadDetails(); // Reload to show new donation and progress
+                }
+            } catch (err) {
+                alert('Donation failed');
+            }
+        });
+
+        loadDetails();
+    </script>
+</body>
+</html>
